@@ -7,7 +7,7 @@ import 'package:projectakhir_mobile/Views/login_screen.dart';
 String boxName = 'USER';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); 
+  WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter<UserModel>(UserModelAdapter());
   await Hive.openBox<UserModel>(boxName);

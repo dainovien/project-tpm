@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:crypto/crypto.dart';
-import 'package:projectakhir_mobile/Views/main.dart';
+import 'package:projectakhir_mobile/Views/main.dart'; // Pastikan boxName di define di sini atau tempat lain yang bisa diakses
 import 'package:projectakhir_mobile/Views/registration_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,11 +19,11 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final _formfield = GlobalKey<FormState>();
   bool passToggle = true;
-  bool _isObscure = true;
 
   late Box<UserModel> _myBox;
   late SharedPreferences prefs;
 
+  @override
   void initState() {
     super.initState();
     checkIsLogin();
@@ -55,7 +55,14 @@ class _LoginScreenState extends State<LoginScreen> {
   void _showSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(
+          message,
+          style: TextStyle(color: Colors.white), // Text color for clarity
+        ),
+        backgroundColor: Color(0xFFFF4655), // Valorant Red for snackbar
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        margin: const EdgeInsets.all(16),
       ),
     );
   }
@@ -70,7 +77,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!found) {
         _showSnackbar('Username or Password is Wrong');
-        _isObscure = false;
       } else {
         await prefs.setString('username', username);
         if (mounted) {
@@ -82,7 +88,6 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         }
         _showSnackbar('Login Success');
-        _isObscure = true;
       }
     }
   }
@@ -99,19 +104,44 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Define Valorant-inspired colors
+    const Color valorantRed = Color(0xFFFF4655);
+    const Color valorantGrey =
+        Color(0xFF1E2326); // Dark grey/black for backgrounds
+    const Color valorantLightGrey =
+        Color(0xFFABB3BA); // For secondary text/hints
+    const Color valorantWhite = Color(0xFFFFFFFF);
+
     return Scaffold(
+      backgroundColor: valorantGrey, // Set a base dark background
       body: Stack(
         children: [
           // Background Image
+          // Ensure 'assets/background.png' is a suitable dark, atmospheric image
           Image.asset(
             'assets/background.png',
             fit: BoxFit.cover,
             height: double.infinity,
             width: double.infinity,
           ),
+          // Gradient Overlay for depth and text readability
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  valorantGrey.withOpacity(
+                      0.6), // Slightly transparent dark grey at top
+                  valorantGrey
+                      .withOpacity(0.9), // More opaque dark grey at bottom
+                ],
+              ),
+            ),
+          ),
           SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 60),
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 80),
               child: Form(
                 key: _formfield,
                 child: Column(
@@ -124,81 +154,91 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         // Valorant Logo
                         Image.asset(
-                          'assets/valorant-logo.png',
-                          height: 50,
-                          width: 50,
+                          'assets/valorant-logo.png', // Ensure this asset is available
+                          height: 70, // Slightly larger logo
+                          width: 70,
                         ),
-                        const SizedBox(width: 10),
-                        const Text(
-                          "Valorant App",
+                        const SizedBox(width: 20), // More space
+                        Text(
+                          "LOGIN",
                           style: TextStyle(
-                            fontSize: 30,
+                            fontFamily:
+                                'ValorantFont', // Use a custom font that resembles Valorant's
+                            fontSize: 40, // Larger title
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            letterSpacing:
+                                3.0, // More letter spacing for impact
+                            color: valorantWhite,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 100),
+                    const SizedBox(height: 150), // Increased spacing
+                    // TextFormField for Username
                     TextFormField(
                       keyboardType: TextInputType.name,
                       controller: _usernameController,
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                          color: valorantWhite), // White text for input
                       decoration: InputDecoration(
-                        labelText: "Username",
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.person, color: Colors.white),
+                        labelText: "USERNAME",
+                        labelStyle: TextStyle(
+                            color: valorantLightGrey), // Light grey label
+                        prefixIcon: Icon(Icons.person,
+                            color: valorantRed), // Valorant Red icon
                         filled: true,
-                        fillColor: Colors.grey[800],
-                        labelStyle: TextStyle(color: Colors.white),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
+                        fillColor: valorantGrey.withOpacity(
+                            0.7), // Slightly lighter fill for contrast
+                        border: OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(10), // Rounded corners
+                          borderSide: BorderSide.none, // No border by default
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                              color: valorantLightGrey.withOpacity(0.5),
+                              width: 1.0), // Subtle border
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                              color: valorantRed,
+                              width: 2.0), // Red border when focused
                         ),
                         errorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red),
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                              color: Colors.redAccent, width: 2.0), // Error red
                         ),
                         focusedErrorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red),
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(color: Colors.red, width: 2.0),
                         ),
-                        errorStyle: TextStyle(
-                          color: Colors.white,
-                        ),
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: 16, horizontal: 20), // Inner padding
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter a username';
+                          return 'Please enter your username';
                         }
                         return null;
                       },
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 25), // Increased spacing
+                    // TextFormField for Password
                     TextFormField(
                       keyboardType: TextInputType.visiblePassword,
                       controller: _passwordController,
                       obscureText: passToggle,
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                          color: valorantWhite), // White text for input
                       decoration: InputDecoration(
-                        labelText: "Password",
-                        border: const OutlineInputBorder(),
-                        prefixIcon: const Icon(Icons.lock, color: Colors.white),
-                        filled: true,
-                        fillColor: Colors.grey[800],
-                        labelStyle: TextStyle(color: Colors.white),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red),
-                        ),
+                        labelText: "PASSWORD",
+                        labelStyle: TextStyle(
+                            color: valorantLightGrey), // Light grey label
+                        prefixIcon: Icon(Icons.lock,
+                            color: valorantRed), // Valorant Red icon
                         suffixIcon: InkWell(
                           onTap: () {
                             setState(() {
@@ -209,57 +249,82 @@ class _LoginScreenState extends State<LoginScreen> {
                             passToggle
                                 ? Icons.visibility
                                 : Icons.visibility_off,
-                            color: Colors.white,
+                            color: valorantLightGrey, // Eye icon color
                           ),
                         ),
-                        errorStyle: TextStyle(
-                          color: Colors.white,
+                        filled: true,
+                        fillColor: valorantGrey.withOpacity(0.7),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
                         ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                              color: valorantLightGrey.withOpacity(0.5),
+                              width: 1.0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide:
+                              BorderSide(color: valorantRed, width: 2.0),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide:
+                              BorderSide(color: Colors.redAccent, width: 2.0),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(color: Colors.red, width: 2.0),
+                        ),
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter a password';
+                          return 'Please enter your password';
                         }
                         return null;
                       },
                     ),
-                    const SizedBox(height: 50),
-                    ElevatedButton(
-                      onPressed: _login,
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.red),
-                        elevation: MaterialStateProperty.all<double>(8),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                    const SizedBox(height: 60),
+                    // Login Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _login,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: valorantRed, // Valorant Red button
+                          padding: const EdgeInsets.symmetric(vertical: 15.0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                10), // Rounded corners for button
                           ),
+                          elevation: 5, // Subtle shadow for depth
                         ),
-                      ),
-                      child: Container(
-                        height: 50,
-                        child: const Center(
-                          child: Text(
-                            "Login",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        child: Text(
+                          "LOGIN",
+                          style: TextStyle(
+                            color: valorantWhite,
+                            fontSize: 20, // Larger font size
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.5, // Spacing for button text
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 30),
+                    // Register Link
                     InkWell(
-                      onTap: _goToRegister, // Navigate to RegisterScreen
-                      child: const Text(
+                      onTap: _goToRegister,
+                      child: Text(
                         "Don't have an account? Register here.",
                         style: TextStyle(
-                          color: Colors.white,
+                          color: valorantLightGrey, // Subtle color for link
                           fontSize: 16,
                           decoration: TextDecoration.underline,
+                          decorationColor: valorantLightGrey,
                         ),
                       ),
                     ),
@@ -289,7 +354,6 @@ class _LoginScreenState extends State<LoginScreen> {
         found = false;
       }
     }
-
     return found;
   }
 
